@@ -61,22 +61,21 @@ const v3 = (token, bot_username, data, api, enterprise_id, time) => {
         axios.get(encodeURI(`http://51.254.91.136:5000/core/${token}/${data}`)).then((res) => {
             response = jsonGenerator(res.response, res.provider.source);
             store(msg.response, time,  bot_id, token)
-        }).catch((err) => {})
-
-        exact(data, token).then((result) => {
-            let msg = result[0];
-            if (msg.related_phrase === "private conversation" || msg.related_phrase === "public conversation") {
-                resolve(jsonGenerator(msg.response))
-                store(msg.response, time,  bot_id, token)
-            } else {
-                resolve(jsonGenerator(response));
-                store(msg.response, time,  bot_id, token)
-            }
-        }).catch(() => {
-            reject(jsonGenerator(null))
+        }).catch((err) => {}).finally(() => {
+            exact(data, token).then((result) => {
+                let msg = result[0];
+                if (msg.related_phrase === "private conversation" || msg.related_phrase === "public conversation") {
+                    resolve(jsonGenerator(msg.response))
+                    store(msg.response, time,  bot_id, token)
+                } else {
+                    resolve(jsonGenerator(response));
+                    store(msg.response, time,  bot_id, token)
+                }
+            }).catch(() => {
+                reject(jsonGenerator(null))
+            })
         })
     })
-
 }
 
 const exact = (data, token) => {
