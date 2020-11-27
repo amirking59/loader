@@ -15,7 +15,7 @@ router.get('/', function (req, res) {
 
         con.query(db.select("enterprises", "token", token), (err, result) => {
             if (err) throw err;
-            if (result.length === 0) res.status(400).json(jsonGenerator("Buy our enterprise plan!"))
+            if (result.length === 0) res.status(400).json(jsonGenerator.error("1", "Buy our enterprise plan!"))
             if (result.length === 1) {
                 let enterprise_id = result[0].id;
                 con.query(db.select("payments", "enterprise_id", enterprise_id), (err, presult) => {
@@ -29,17 +29,17 @@ router.get('/', function (req, res) {
                                     res.json(err)
                                 })
                             } else {
-                                res.status(400).json(jsonGenerator("Buy our enterprise plan!"))
+                                res.status(400).json(jsonGenerator.error("1", "Buy our enterprise plan!"))
                             }
                         } else {
-                            res.status(400).json(jsonGenerator("Your account has expired!"))
+                            res.status(400).json(jsonGenerator.error("2", "Your account has expired!"))
                         }
                     })
                 })
             }
         })
     } catch (err) {
-        res.status(400).json(jsonGenerator("server error!"))
+        res.status(400).json(jsonGenerator.error("3", "server error!"))
     }
 });
 
@@ -47,7 +47,7 @@ module.exports = router;
 
 const v3 = (token, bot_username, data, api, enterprise_id, time) => {
     return new Promise((resolve, reject) => {
-        let response = jsonGenerator(null)
+        let response = jsonGenerator.response(null)
         let bot_id = 0;
         con.query(db.select("robots", "username", bot_username), (err, result) => {
             if (err) reject(err);
@@ -59,20 +59,20 @@ const v3 = (token, bot_username, data, api, enterprise_id, time) => {
         })
 
         axios.get(encodeURI(`http://51.254.91.136:5000/core/${token}/${data}`)).then((res) => {
-            response = jsonGenerator(res.response, res.provider.source);
+            response = jsonGenerator.response(res.response);
             store(msg.response, time,  bot_id, token)
         }).catch((err) => {}).finally(() => {
             exact(data, token).then((result) => {
                 let msg = result[0];
                 if (msg.related_phrase === "private conversation" || msg.related_phrase === "public conversation") {
-                    resolve(jsonGenerator(msg.response))
+                    resolve(jsonGenerator.response(msg.response))
                     store(msg.response, time,  bot_id, token)
                 } else {
-                    resolve(jsonGenerator(response));
+                    resolve(jsonGenerator.response(response));
                     store(msg.response, time,  bot_id, token)
                 }
             }).catch(() => {
-                reject(jsonGenerator(null))
+                reject(jsonGenerator.response(null))
             })
         })
     })

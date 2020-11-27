@@ -1,13 +1,30 @@
-const jsonGenerator = (response, source = 'AI Core V3', errorCode = 1, errorMessage = null, buttons = null, images = null) => ({
+const response = (response, buttons = null, images = null) => ({
     provider: {
         website: "https://rotic.ir",
-        source
+        source: 'AI Core V3'
     },
-    status: errorCode,
+    status: 0,
     response,
     options: {
         buttons,
         images
+    },
+    error: {
+        code: 0,
+        message: null
+    }
+});
+
+const error = (errorCode = 1, errorMessage = null) => ({
+    provider: {
+        website: "https://rotic.ir",
+        source: 'AI Core V3'
+    },
+    status: errorCode,
+    response: null,
+    options: {
+        buttons: null,
+        images: null
     },
     error: {
         code: errorCode,
@@ -15,4 +32,8 @@ const jsonGenerator = (response, source = 'AI Core V3', errorCode = 1, errorMess
     }
 });
 
-module.exports = jsonGenerator;
+
+module.exports = {
+    response,
+    error
+};
