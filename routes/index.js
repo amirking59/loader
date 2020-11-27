@@ -47,7 +47,7 @@ module.exports = router;
 
 const v3 = (token, bot_username, data, api, enterprise_id, time) => {
     return new Promise((resolve, reject) => {
-        let response = jsonGenerator("khoob")
+        let response = jsonGenerator(null)
         let bot_id = 0;
         con.query(db.select("robots", "username", bot_username), (err, result) => {
             if (err) reject(err);
@@ -61,9 +61,7 @@ const v3 = (token, bot_username, data, api, enterprise_id, time) => {
         axios.get(encodeURI(`http://51.254.91.136:5000/core/${token}/${data}`)).then((res) => {
             response = jsonGenerator(res.response, res.provider.source);
             store(msg.response, time,  bot_id, token)
-        }).catch((err) => {
-
-        })
+        }).catch((err) => {})
 
         exact(data, token).then((result) => {
             let msg = result[0];
@@ -98,17 +96,15 @@ const exact = (data, token) => {
             }
             if (err) {
                 reject(err)
-            } else {
-                resolve(array)
             }
+            resolve(array)
         })
     })
 }
 
 const store = (data, time, bot_id, token) =>{
     con.query(db.create(data, time, bot_id, token), (err, result) => {
-        if (err) reject(err);
+        if (err) throw err;
         return true;
     })
-
 }
