@@ -43,6 +43,15 @@ router.get('/', function (req, res) {
     }
 });
 
+
+router.get("/search", async (req, res) => {
+    try {
+
+    } catch (err) {
+        res.status(400).json(jsonGenerator.error("3", "server error!"))
+    }
+})
+
 module.exports = router;
 
 const v3 = (token, bot_username, data, api, enterprise_id, time) => {
